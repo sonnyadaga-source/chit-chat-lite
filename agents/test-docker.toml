@@ -1,0 +1,21 @@
+[agent]
+name = "selfhosted-ai-docker-test"
+description = "Test selfhosted-ai services via HTTP health endpoints"
+execution = "act"
+
+[instructions]
+text = """
+Check these endpoints:
+ Ollama: http://localhost:11434/api/generate (POST, expect valid response)
+ """
+"""
+
+[tools.http]
+enabled = true
+[tools.ollama]
+enabled = true
+
+[exit]
+success = "All services returned HTTP 200"
+failure = "One or more services failed healthcheck or Ollama did not respond"
+success = "All services returned healthy responses and Ollama generated output"

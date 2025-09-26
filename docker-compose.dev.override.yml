@@ -1,0 +1,20 @@
+﻿services:
+  postgres:
+    restart: unless-stopped
+
+  backend:
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nocodb:
+    restart: unless-stopped
+
+  n8n:
+    restart: unless-stopped
+
+  minio:
+    restart: unless-stopped

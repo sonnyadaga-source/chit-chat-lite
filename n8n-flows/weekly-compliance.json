@@ -1,0 +1,37 @@
+{
+  "name": "Weekly Compliance Check",
+  "nodes": [
+    {
+      "parameters": { "cronExpression": "0 18 * * 5" },
+      "name": "Weekly Cron Trigger (Friday 6PM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "query": "SELECT sec.name AS section FROM sections sec WHERE NOT EXISTS (SELECT 1 FROM absences a WHERE a.date >= NOW() - INTERVAL '7 days' AND a.student_id IN (SELECT id FROM students WHERE section_id = sec.id));"
+      },
+      "name": "Check Missing Reports",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [550, 300],
+      "credentials": { "postgres": "Postgres Credential" }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "📋 Weekly Compliance Report:\n\nSections with no reports this week:\n{{$json[\"section\"]}}"
+      },
+      "name": "Send Telegram Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": { "telegramApi": "Telegram Credential" }
+    }
+  ],
+  "connections": {
+    "Weekly Cron Trigger (Friday 6PM)": { "main": [[{ "node": "Check Missing Reports", "type": "main", "index": 0 }]] },
+    "Check Missing Reports": { "main": [[{ "node": "Send Telegram Summary", "type": "main", "index": 0 }]] }
+  }
+}

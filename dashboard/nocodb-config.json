@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "beadle": {
+      "permissions": {
+        "students": ["read"],
+        "absences": ["create", "read"],
+        "media": ["create", "read"]
+      },
+      "filters": {
+        "students": { "section_id": "$USER_SECTION_ID" },
+        "absences": { "reported_by": "$USER_ID" }
+      }
+    },
+    "adviser": {
+      "permissions": {
+        "students": ["read"],
+        "absences": ["read"],
+        "sections": ["read"]
+      },
+      "filters": {
+        "students": { "section_id": "$USER_SECTION_ID" }
+      }
+    },
+    "coordinator": {
+      "permissions": {
+        "students": ["read", "update", "delete"],
+        "sections": ["read", "update"],
+        "absences": ["create", "read", "update", "delete"],
+        "media": ["read", "delete"],
+        "audit_log": ["read"]
+      },
+      "filters": {}
+    }
+  },
+  "tables": {
+    "students": {
+      "views": {
+        "beadle_view": {
+          "columns": ["id", "name", "section_id"],
+          "role": "beadle"
+        },
+        "coordinator_view": {
+          "columns": ["id", "name", "section_id", "contact_number"],
+          "role": "coordinator"
+        }
+      }
+    },
+    "absences": {
+      "views": {
+        "beadle_entry": {
+          "columns": ["student_id", "date", "status", "notes", "media_id"],
+          "role": "beadle"
+        },
+        "coordinator_dashboard": {
+          "columns": ["id", "student_id", "date", "status", "reported_by", "flagged", "flag_reason"],
+          "role": "coordinator"
+        }
+      }
+    }
+  }
+}
