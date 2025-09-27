@@ -1,0 +1,15 @@
+﻿services:
+  postgres:
+    restart: always
+
+  backend:
+    restart: always
+
+  nocodb:
+    restart: always
+
+  n8n:
+    restart: always
+
+  minio:
+    restart: always

@@ -1,0 +1,112 @@
+{
+  "info": {
+    "name": "POD AI Monitoring API",
+    "_postman_id": "pod-ai-monitoring-collection",
+    "description": "Collection of API endpoints for POD AI Monitoring Assistant",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Get JWT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"coord1\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "http://localhost:4000/users/login", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["users", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "http://localhost:4000/students", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["students"] }
+          }
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Student\",\n  \"section_id\": 1,\n  \"contact_number\": \"09170001111\"\n}"
+            },
+            "url": { "raw": "http://localhost:4000/students", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["students"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Absences",
+      "item": [
+        {
+          "name": "Log Absence",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": 1,\n  \"date\": \"2025-09-26\",\n  \"status\": \"absent\",\n  \"reported_by\": 5,\n  \"notes\": \"No excuse submitted\"\n}"
+            },
+            "url": { "raw": "http://localhost:4000/absences", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["absences"] }
+          }
+        },
+        {
+          "name": "Update Absence (Flag)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flagged\": true,\n  \"flag_reason\": \"3 consecutive absences\",\n  \"reason\": \"system auto-flag\"\n}"
+            },
+            "url": { "raw": "http://localhost:4000/absences/1", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["absences", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "http://localhost:4000/audit-logs", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["audit-logs"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "jwt", "value": "" }
+  ]
+}

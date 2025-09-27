@@ -1,0 +1,4 @@
+version = "0.1"
+
+[agents.test-docker]
+path = "agents/test-docker.toml"

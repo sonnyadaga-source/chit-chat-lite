@@ -1,0 +1,37 @@
+{
+  "name": "On-Demand Alerts",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "query": "SELECT sec.name, COUNT(a.id) AS total_absences FROM absences a JOIN students s ON a.student_id = s.id JOIN sections sec ON s.section_id = sec.id WHERE a.date >= NOW() - INTERVAL '7 days' GROUP BY sec.name;"
+      },
+      "name": "Fetch Section Absences",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [550, 300],
+      "credentials": { "postgres": "Postgres Credential" }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "📊 Weekly Absence Summary:\n{{$json[\"name\"]}} → {{$json[\"total_absences\"]}} absences"
+      },
+      "name": "Send Telegram Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": { "telegramApi": "Telegram Credential" }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Fetch Section Absences", "type": "main", "index": 0 }]] },
+    "Fetch Section Absences": { "main": [[{ "node": "Send Telegram Summary", "type": "main", "index": 0 }]] }
+  }
+}

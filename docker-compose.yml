@@ -1,0 +1,121 @@
+﻿version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: pod_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: pod_ai
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: pod_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres_password
+      DB_NAME: pod_ai
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/ || exit 1"]
+      interval: 15s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  nocodb:
+    image: nocodb/nocodb:latest
+    container_name: pod_nocodb
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NC_DB_URL: postgres://postgres:postgres_password@postgres:5432/pod_ai
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 15s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pod_n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_USER: postgres
+      DB_POSTGRESDB_PASSWORD: postgres_password
+      DB_POSTGRESDB_DATABASE: pod_ai
+    ports:
+      - "5678:5678"
+    volumes:
+      - ./n8n-flows:/home/node/.n8n
+    healthcheck:
+      # curl isn't installed in the n8n image; use a node one-liner instead
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:5678/', res=>{process.exit(res.statusCode===200?0:1)})\""]
+      interval: 15s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  minio:
+    image: minio/minio:latest
+    container_name: pod_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 30s
+      retries: 5
+      start_period: 20s
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: pod_frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:4000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+      interval: 15s
+      retries: 5
+      start_period: 20s
+    restart: always
+

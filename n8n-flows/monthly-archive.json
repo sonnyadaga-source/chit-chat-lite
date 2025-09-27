@@ -1,0 +1,48 @@
+{
+  "name": "Monthly Archive Job",
+  "nodes": [
+    {
+      "parameters": { "cronExpression": "30 23 L * *" },
+      "name": "Monthly Cron Trigger (Last Day 11:30PM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "query": "SELECT * FROM absences WHERE date < NOW() - INTERVAL '30 days';"
+      },
+      "name": "Export Old Absences",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [550, 300],
+      "credentials": { "postgres": "Postgres Credential" }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "absences_archive"
+      },
+      "name": "Insert into Local Archive DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": { "postgres": "Local Archive Credential" }
+    },
+    {
+      "parameters": {
+        "query": "DELETE FROM absences WHERE date < NOW() - INTERVAL '30 days';"
+      },
+      "name": "Cleanup Cloud DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [1150, 300],
+      "credentials": { "postgres": "Postgres Credential" }
+    }
+  ],
+  "connections": {
+    "Monthly Cron Trigger (Last Day 11:30PM)": { "main": [[{ "node": "Export Old Absences", "type": "main", "index": 0 }]] },
+    "Export Old Absences": { "main": [[{ "node": "Insert into Local Archive DB", "type": "main", "index": 0 }]] },
+    "Insert into Local Archive DB": { "main": [[{ "node": "Cleanup Cloud DB", "type": "main", "index": 0 }]] }
+  }
+}

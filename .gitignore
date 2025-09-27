@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -22,3 +23,47 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+=======
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build / cache
+dist/
+build/
+.cache/
+coverage/
+tmp/
+logs/
+
+# Database / backups
+*.sqlite
+*.db
+*.dump
+backups/
+
+# IDE / OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-data/
+minio-data/
+
+# Project specific
+*.log
+coverage/
+dist/
+.env*
+!.env.example
+>>>>>>> pod/main

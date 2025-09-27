@@ -1,0 +1,39 @@
+{
+  "name": "Daily Absence Check",
+  "nodes": [
+    {
+      "parameters": {
+        "cronExpression": "0 20 * * *"
+      },
+      "name": "Daily Cron Trigger (8PM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "query": "SELECT s.name AS student, sec.name AS section, COUNT(a.id) AS absence_count FROM absences a JOIN students s ON a.student_id = s.id JOIN sections sec ON s.section_id = sec.id WHERE a.status = 'absent' AND a.date >= NOW() - INTERVAL '30 days' GROUP BY s.name, sec.name HAVING COUNT(a.id) >= 3;"
+      },
+      "name": "Check Absence Threshold",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [550, 300],
+      "credentials": { "postgres": "Postgres Credential" }
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "⚠️ Daily Absence Alert:\n\n{{$json[\"student\"]}} ({{$json[\"section\"]}}) has {{$json[\"absence_count\"]}} absences this month.\n\nView full report 👉 {{ $json[\"link\"] }}"
+      },
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": { "telegramApi": "Telegram Credential" }
+    }
+  ],
+  "connections": {
+    "Daily Cron Trigger (8PM)": { "main": [[{ "node": "Check Absence Threshold", "type": "main", "index": 0 }]] },
+    "Check Absence Threshold": { "main": [[{ "node": "Send Telegram Alert", "type": "main", "index": 0 }]] }
+  }
+}
