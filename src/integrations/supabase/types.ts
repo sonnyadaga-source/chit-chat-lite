@@ -14,16 +14,302 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      absences: {
+        Row: {
+          created_at: string | null
+          date: string
+          flag_reason: string | null
+          flagged: boolean | null
+          id: string
+          media_id: string | null
+          notes: string | null
+          reason: string | null
+          reported_by: string
+          status: Database["public"]["Enums"]["absence_status"]
+          student_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          flag_reason?: string | null
+          flagged?: boolean | null
+          id?: string
+          media_id?: string | null
+          notes?: string | null
+          reason?: string | null
+          reported_by: string
+          status?: Database["public"]["Enums"]["absence_status"]
+          student_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          flag_reason?: string | null
+          flagged?: boolean | null
+          id?: string
+          media_id?: string | null
+          notes?: string | null
+          reason?: string | null
+          reported_by?: string
+          status?: Database["public"]["Enums"]["absence_status"]
+          student_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "absences_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "absences_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_log: {
+        Row: {
+          action: string
+          after_values: Json | null
+          before_values: Json | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          reason: string | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          after_values?: Json | null
+          before_values?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          reason?: string | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          after_values?: Json | null
+          before_values?: Json | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          reason?: string | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      media: {
+        Row: {
+          checksum: string
+          created_at: string | null
+          file_path: string
+          file_size: number
+          filename: string
+          id: string
+          mime_type: string
+          original_filename: string | null
+          type: Database["public"]["Enums"]["media_type"]
+          uploaded_by: string | null
+        }
+        Insert: {
+          checksum: string
+          created_at?: string | null
+          file_path: string
+          file_size: number
+          filename: string
+          id?: string
+          mime_type: string
+          original_filename?: string | null
+          type: Database["public"]["Enums"]["media_type"]
+          uploaded_by?: string | null
+        }
+        Update: {
+          checksum?: string
+          created_at?: string | null
+          file_path?: string
+          file_size?: number
+          filename?: string
+          id?: string
+          mime_type?: string
+          original_filename?: string | null
+          type?: Database["public"]["Enums"]["media_type"]
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          is_approved: boolean | null
+          role: Database["public"]["Enums"]["app_role"]
+          section_id: string | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          is_approved?: boolean | null
+          role?: Database["public"]["Enums"]["app_role"]
+          section_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          is_approved?: boolean | null
+          role?: Database["public"]["Enums"]["app_role"]
+          section_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sections: {
+        Row: {
+          adviser_name: string
+          contact_number: string | null
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          adviser_name: string
+          contact_number?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          adviser_name?: string
+          contact_number?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          contact_number: string | null
+          created_at: string | null
+          id: string
+          name: string
+          section_id: string
+          student_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_number?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          section_id: string
+          student_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_number?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          section_id?: string
+          student_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_section: {
+        Args: { _user_id: string }
+        Returns: string
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_coordinator: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      absence_status: "present" | "absent"
+      app_role: "beadle" | "adviser" | "coordinator"
+      media_type: "image" | "video"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +436,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      absence_status: ["present", "absent"],
+      app_role: ["beadle", "adviser", "coordinator"],
+      media_type: ["image", "video"],
+    },
   },
 } as const
